@@ -14,6 +14,7 @@
   "author": "Glaz Dodo",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongoose": "^7.3.0"
   },
