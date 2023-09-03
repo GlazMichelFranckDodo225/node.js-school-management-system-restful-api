@@ -8,6 +8,8 @@ const app = express();
 // === Middlewares ==
 // app.use(morgan('combined'));
 app.use(morgan('dev'));
+// Parse incoming Data to JSON
+app.use(express.json());
 
 // === Routes ==
 app.use(adminBaseUrl, adminRouter);

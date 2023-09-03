@@ -1,11 +1,32 @@
+const Admin = require('../../model/staff/Admin');
+
 // @desc Register Admins
 // @route POST /api/v1/admins/register
 // @access Private
-exports.registerAdminController = (req, res) => {
+exports.registerAdminController = async (req, res) => {
+    // Destructuring Properties from the Request Body
+    const { name, email, password } = req.body;
+
     try {
+        // Check if "email" exists
+        const adminFound = await Admin.findOne({ email });
+        if (adminFound) {
+            res.json("Admin Already Exists");
+        }
+
+        // Register the User as Admin
+        const user = await Admin.create(
+            {
+                name,
+                email,
+                password
+            }
+        );
+
+        // Send Response back
         res.status(201).json({
             status: "success",
-            data: "Admin has been registered"
+            data: user
         })
     } catch (error) {
         res.json({
