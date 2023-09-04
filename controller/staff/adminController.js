@@ -9,10 +9,10 @@ exports.registerAdminController = async (req, res) => {
 
     try {
         // Check if "email" exists
-        const adminFound = await Admin.findOne({ email });
+        /* const adminFound = await Admin.findOne({ email });
         if (adminFound) {
             res.json("Admin Already Exists");
-        }
+        } */ 
 
         // Register the User as Admin
         const user = await Admin.create(
@@ -39,12 +39,21 @@ exports.registerAdminController = async (req, res) => {
 // @desc Login Admins
 // @route POST /api/v1/admins/login
 // @access Private
-exports.loginAdminController = (req, res) => {
+exports.loginAdminController = async (req, res) => {
+    // Destructuring Properties from the Request Body
+    const { email, password } = req.body;
+
     try {
-        res.status(201).json({
-            status: "success",
-            data: "Admin has been login"
-        })
+        // Find User
+        const user = await Admin.findOne({email});
+        if(!user) {
+            return res.json({message: "Invalid Credentials"});
+        }
+        if(user && (await user.verifyPassword(password))) {
+            return res.json({data: user});
+        } else {
+            return res.json({message: "Invalid Credentials"});
+        }
     } catch (error) {
         res.json({
             status: "failed",

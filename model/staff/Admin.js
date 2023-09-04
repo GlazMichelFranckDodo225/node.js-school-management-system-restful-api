@@ -82,6 +82,12 @@ adminSchema.pre('save', async function(next) {
   next();
 });
 
+// Verify Password
+adminSchema.methods.verifyPassword = async function(enteredPassword) {
+  // return "true" or "false"
+  return await bcrypt.compare(enteredPassword, this.password); 
+};
+
 //model
 const Admin = mongoose.model("Admin", adminSchema);
 
