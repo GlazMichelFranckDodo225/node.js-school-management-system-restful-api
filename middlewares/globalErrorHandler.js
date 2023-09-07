@@ -1,3 +1,4 @@
+// Custom Global Error Handler
 const globalErrorHandler = (err, req, res, next) => {
     // console.log(err);
     // Stack
@@ -15,4 +16,13 @@ const globalErrorHandler = (err, req, res, next) => {
     });
 }
 
-module.exports = globalErrorHandler;
+// Not Found Error
+const notFoundError = (req, res, next) => {
+    const error = new Error(`Not Found the Endpoint ${req.originalUrl} on the Server`);
+    next(error);
+}
+
+module.exports = {
+    globalErrorHandler,
+    notFoundError
+};
