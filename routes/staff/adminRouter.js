@@ -1,5 +1,5 @@
 const express = require('express');
-const adminRouter = express.Router();
+
 // Destructuring
 const {
     registerAdminController,
@@ -16,6 +16,8 @@ const {
     adminUnpublishExamResultsController
 } = require('../../controller/staff/adminController');
 
+const isLogin = require('../../middlewares/isLogin');
+const adminRouter = express.Router();
 const idBaseUrl = "/:id";
 const teacherBaseUrl = "/teacher" + idBaseUrl;
 const examBaseUrl = "/exam" + idBaseUrl;
@@ -31,7 +33,7 @@ adminRouter.post("/login", loginAdminController);
 adminRouter.get("/", getAdminsController);
 
 // Get Single Admin
-adminRouter.get(idBaseUrl, getAdminController);
+adminRouter.get(idBaseUrl, isLogin, getAdminController);
 
 // Update Admin
 adminRouter.put(idBaseUrl, updateAdminController);

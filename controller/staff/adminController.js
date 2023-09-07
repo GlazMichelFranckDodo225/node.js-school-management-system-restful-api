@@ -40,10 +40,15 @@ exports.loginAdminController = async (req, res) => {
     try {
         // Find User
         const user = await Admin.findOne({email});
+
         if(!user) {
             return res.json({message: "Invalid Credentials"});
         }
+
         if(user && (await user.verifyPassword(password))) {
+            // Save the User into the Request Object
+            req.userAuth = user;
+            
             return res.json({data: user});
         } else {
             return res.json({message: "Invalid Credentials"});
