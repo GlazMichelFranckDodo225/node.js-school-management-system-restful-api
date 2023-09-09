@@ -1,5 +1,6 @@
 const AsyncHandler = require('express-async-handler');
 const Admin = require('../../model/staff/Admin');
+const generateToken = require('../../utils/generateToken');
 
 // @desc Register Admins
 // @route POST /api/v1/admins/register
@@ -12,7 +13,7 @@ exports.registerAdminController = AsyncHandler(async (req, res) => {
     const adminFound = await Admin.findOne({ email });
     if (adminFound) {
         throw new Error("Admin Already Exists");
-    } 
+    }
 
     // Register the User as Admin
     const user = await Admin.create(
@@ -33,33 +34,28 @@ exports.registerAdminController = AsyncHandler(async (req, res) => {
 // @desc Login Admins
 // @route POST /api/v1/admins/login
 // @access Private
-exports.loginAdminController = async (req, res) => {
+exports.loginAdminController = AsyncHandler(async (req, res) => {
     // Destructuring Properties from the Request Body
     const { email, password } = req.body;
 
-    try {
-        // Find User
-        const user = await Admin.findOne({email});
+    // Find User
+    const user = await Admin.findOne({ email });
 
-        if(!user) {
-            return res.json({message: "Invalid Credentials"});
-        }
-
-        if(user && (await user.verifyPassword(password))) {
-            // Save the User into the Request Object
-            req.userAuth = user;
-            
-            return res.json({data: user});
-        } else {
-            return res.json({message: "Invalid Credentials"});
-        }
-    } catch (error) {
-        res.json({
-            status: "failed",
-            error: error.message
-        })
+    if (!user) {
+        return res.json({ message: "Invalid Credentials" });
     }
-}
+
+    if (user && (await user.verifyPassword(password))) {
+        // Save the User into the Request Object
+        req.userAuth = user;
+
+        // return res.json({data: user});
+        // Send the generated Token instead of the User
+        return res.json({ data: generateToken(user.id) });
+    } else {
+        return res.json({ message: "Invalid Credentials" });
+    }
+});
 
 // @desc Get All Admins
 // @route GET /api/v1/admins/
