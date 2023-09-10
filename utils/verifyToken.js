@@ -6,7 +6,8 @@ const verifyToken = token => {
     'anykey',
     (error, decoded) => {
         if(error) {
-            return {msg: "Invalid Token"};
+            // return {msg: "Invalid Token"};
+            return false;
         } else {
             return decoded // decoded == user
         }

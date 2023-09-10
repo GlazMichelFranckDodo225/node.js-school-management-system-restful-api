@@ -90,6 +90,7 @@ exports.getAdminsController = (req, res) => {
 // @access Private
 exports.getAdminController = (req, res) => {
     try {
+        console.log(req.userAuth);
         res.status(201).json({
             status: "success",
             data: "Single Admin"
