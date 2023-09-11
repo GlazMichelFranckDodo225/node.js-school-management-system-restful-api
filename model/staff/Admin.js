@@ -20,7 +20,7 @@ const adminSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "admin",
-    },
+    }/* ,
     academicTerms: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -62,16 +62,16 @@ const adminSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Student",
       },
-    ],
-  },
+    ], */
+  }/* ,
   {
     timestamps: true,
-  }
+  } */
 );
 
 // Hash Password before saving
-adminSchema.pre('save', async function(next) {
-  if(!this.isModified('password')) {
+adminSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
   // console.log(this);
@@ -83,9 +83,9 @@ adminSchema.pre('save', async function(next) {
 });
 
 // Verify Password
-adminSchema.methods.verifyPassword = async function(enteredPassword) {
+adminSchema.methods.verifyPassword = async function (enteredPassword) {
   // return "true" or "false"
-  return await bcrypt.compare(enteredPassword, this.password); 
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 //model

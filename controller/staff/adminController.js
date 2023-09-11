@@ -58,10 +58,10 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
 
         // return res.json({data: user});
         // Send the generated Token instead of the User
-        return res.json({ 
-            data: generateToken(user._id), 
-            user, 
-            verify 
+        return res.json({
+            data: generateToken(user._id),
+            user,
+            verify
         });
     } else {
         return res.json({ message: "Invalid Login Credentials" });
@@ -88,20 +88,22 @@ exports.getAdminsController = (req, res) => {
 // @desc Get Single Admin
 // @route GET /api/v1/admins/:id
 // @access Private
-exports.getAdminController = (req, res) => {
-    try {
-        console.log(req.userAuth);
-        res.status(201).json({
-            status: "success",
-            data: "Single Admin"
-        })
-    } catch (error) {
-        res.json({
-            status: "failed",
-            error: error.message
-        })
+exports.getAdminProfileController = AsyncHandler(async (req, res) => {
+    // console.log(req.userAuth);
+    const admin = await Admin.findById(req.userAuth._id).select(
+        "-password -createdAt -updatedAt"
+        );
+    console.log(admin);
+
+    if(!admin) {
+        throw new Error("Admin Not Found");
+    } else {
+        res.status(200).json({
+            status: "Success",
+            data: admin
+        });
     }
-}
+});
 
 // @desc Update Admin
 // @route PUT /api/v1/admins/:id
