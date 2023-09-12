@@ -29,7 +29,7 @@ adminRouter.post("/register", registerAdminController);
 adminRouter.post("/login", loginAdminController);
 
 // Get all Admins
-adminRouter.get("/", getAdminsController);
+adminRouter.get("/", isLogin, getAdminsController);
 
 // Get Single Admin
 adminRouter.get("/profile", isLogin, getAdminProfileController);
