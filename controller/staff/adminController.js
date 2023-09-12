@@ -28,7 +28,8 @@ exports.registerAdminController = AsyncHandler(async (req, res) => {
     // Send Response back
     res.status(201).json({
         status: "success",
-        data: user
+        data: user,
+        message: "Admin Registered Successfully"
     });
 });
 
@@ -47,21 +48,11 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
     }
 
     if (user && (await user.verifyPassword(password))) {
-        // Save the User into the Request Object
-        // req.userAuth = user;
-        // Assign the Token to the User
-        const token = generateToken(user._id);
-
-        // Verification of the Token
-        const verify = verifyToken("token");
-        // console.log(verify);
-
         // return res.json({data: user});
         // Send the generated Token instead of the User
         return res.json({
             data: generateToken(user._id),
-            user,
-            verify
+            message: "Admin Logged In Successfully"
         });
     } else {
         return res.json({ message: "Invalid Login Credentials" });
@@ -100,7 +91,8 @@ exports.getAdminProfileController = AsyncHandler(async (req, res) => {
     } else {
         res.status(200).json({
             status: "Success",
-            data: admin
+            data: admin,
+            message: "Admin Profile Fetched Successfully"
         });
     }
 });
