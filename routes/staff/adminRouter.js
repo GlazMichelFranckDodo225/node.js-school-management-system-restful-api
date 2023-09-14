@@ -15,6 +15,8 @@ const {
     adminUnpublishExamResultsController
 } = require('../../controller/staff/adminController');
 const isLogin = require('../../middlewares/isLogin');
+const isAdmin = require('../../middlewares/isAdmin');
+
 // Variables
 const adminRouter = express.Router();
 const idBaseUrl = "/:id";
@@ -32,7 +34,7 @@ adminRouter.post("/login", loginAdminController);
 adminRouter.get("/", isLogin, getAdminsController);
 
 // Get Single Admin
-adminRouter.get("/profile", isLogin, getAdminProfileController);
+adminRouter.get("/profile", isLogin, isAdmin, getAdminProfileController);
 
 // Update Admin
 adminRouter.put(idBaseUrl, updateAdminController);
