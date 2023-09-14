@@ -1,4 +1,5 @@
 const AsyncHandler = require('express-async-handler');
+const bcrypt = require('bcryptjs');
 const Admin = require('../../model/staff/Admin');
 const generateToken = require('../../utils/generateToken');
 const verifyToken = require('../../utils/verifyToken');
@@ -16,12 +17,17 @@ exports.registerAdminController = AsyncHandler(async (req, res) => {
         throw new Error("Admin Already Exists");
     }
 
+    // Create Salt
+    const salt = await bcrypt.genSalt(10);
+    // Hash the Password
+    const passwordHashed = this.password = await bcrypt.hash(password, salt);
+
     // Register the User as Admin
     const user = await Admin.create(
         {
             name,
             email,
-            password
+            password: passwordHashed
         }
     );
 
@@ -42,20 +48,21 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
 
     // Find User
     const user = await Admin.findOne({ email });
-
     if (!user) {
-        return res.json({ message: "Invalid Credentials" });
-    }
+        return res.json({ message: "Invalid Login Credentials" });
+    } 
 
-    if (user && (await user.verifyPassword(password))) {
+    // Verify Password
+    const isMatched = await bcrypt.compare(password, user.password);
+    if(!isMatched) {
+        return res.json({ message: "Invalid Login Credentials" });
+    } else {
         // return res.json({data: user});
         // Send the generated Token instead of the User
         return res.json({
             data: generateToken(user._id),
             message: "Admin Logged In Successfully"
-        });
-    } else {
-        return res.json({ message: "Invalid Login Credentials" });
+        }); 
     }
 });
 
