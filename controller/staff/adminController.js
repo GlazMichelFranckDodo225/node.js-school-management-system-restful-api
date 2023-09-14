@@ -95,19 +95,35 @@ exports.getAdminProfileController = AsyncHandler(async (req, res) => {
 // @desc Update Admin
 // @route PUT /api/v1/admins/:id
 // @access Private
-exports.updateAdminController = (req, res) => {
-    try {
-        res.status(201).json({
-            status: "success",
-            data: "Update Admin"
-        })
-    } catch (error) {
-        res.json({
-            status: "failed",
-            error: error.message
-        })
+exports.updateAdminController = AsyncHandler(async (req, res) => {
+    const {email, name, password} = req.body;
+    // Verify if the email is already taken
+    const emailExist = await Admin.findOne({email});
+    if(emailExist) {
+        throw new Error("This email is already taken");
+    } else {
+        // Update Admin
+        const admin = await Admin.findByIdAndUpdate(
+            req.userAuth._id, 
+            {
+            email,
+            name,
+            password
+            }, 
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        res.status(200).json({
+            status: "Success",
+            data: admin,
+            message: "Admin Updated Successfully" 
+        });
     }
-}
+
+});
 
 // @desc Delete Admin
 // @route DELETE /api/v1/admins/:id
