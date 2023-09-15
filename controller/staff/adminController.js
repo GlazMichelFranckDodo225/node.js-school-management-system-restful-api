@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const Admin = require('../../model/staff/Admin');
 const generateToken = require('../../utils/generateToken');
 const verifyToken = require('../../utils/verifyToken');
+const { hashPassword, isPasswordMatched } = require('../../utils/helpers');
 
 // @desc Register Admins
 // @route POST /api/v1/admins/register
@@ -17,17 +18,12 @@ exports.registerAdminController = AsyncHandler(async (req, res) => {
         throw new Error("Admin Already Exists");
     }
 
-    // Create Salt
-    const salt = await bcrypt.genSalt(10);
-    // Hash the Password
-    const passwordHashed = this.password = await bcrypt.hash(password, salt);
-
     // Register the User as Admin
     const user = await Admin.create(
         {
             name,
             email,
-            password: passwordHashed
+            password: await hashPassword(password)
         }
     );
 
@@ -53,7 +49,7 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
     }
 
     // Verify Password
-    const isMatched = await bcrypt.compare(password, user.password);
+    const isMatched = await isPasswordMatched(password, user.password);
     if (!isMatched) {
         return res.json({ message: "Invalid Login Credentials" });
     } else {
@@ -110,11 +106,6 @@ exports.updateAdminController = AsyncHandler(async (req, res) => {
         throw new Error("This email is already taken");
     }
 
-    // Create Salt
-    const salt = await bcrypt.genSalt(10);
-    // Hash the Password
-    const passwordHashed = this.password = await bcrypt.hash(password, salt);
-
     // Check if User is updating Password
     if (password) {
         // Update Admin
@@ -122,7 +113,7 @@ exports.updateAdminController = AsyncHandler(async (req, res) => {
             req.userAuth._id,
             {
                 email,
-                password: passwordHashed,
+                password: await hashPassword(password),
                 name
             },
             {
