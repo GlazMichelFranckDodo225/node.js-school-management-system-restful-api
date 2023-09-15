@@ -50,11 +50,11 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
     const user = await Admin.findOne({ email });
     if (!user) {
         return res.json({ message: "Invalid Login Credentials" });
-    } 
+    }
 
     // Verify Password
     const isMatched = await bcrypt.compare(password, user.password);
-    if(!isMatched) {
+    if (!isMatched) {
         return res.json({ message: "Invalid Login Credentials" });
     } else {
         // return res.json({data: user});
@@ -62,7 +62,7 @@ exports.loginAdminController = AsyncHandler(async (req, res) => {
         return res.json({
             data: generateToken(user._id),
             message: "Admin Logged In Successfully"
-        }); 
+        });
     }
 });
 
@@ -85,10 +85,10 @@ exports.getAdminProfileController = AsyncHandler(async (req, res) => {
     // console.log(req.userAuth);
     const admin = await Admin.findById(req.userAuth._id).select(
         "-password -createdAt -updatedAt"
-        );
+    );
     console.log(admin);
 
-    if(!admin) {
+    if (!admin) {
         throw new Error("Admin Not Found");
     } else {
         res.status(200).json({
@@ -103,20 +103,28 @@ exports.getAdminProfileController = AsyncHandler(async (req, res) => {
 // @route PUT /api/v1/admins/:id
 // @access Private
 exports.updateAdminController = AsyncHandler(async (req, res) => {
-    const {email, name, password} = req.body;
+    const { email, name, password } = req.body;
     // Verify if the email is already taken
-    const emailExist = await Admin.findOne({email});
-    if(emailExist) {
+    const emailExist = await Admin.findOne({ email });
+    if (emailExist) {
         throw new Error("This email is already taken");
-    } else {
+    }
+
+    // Create Salt
+    const salt = await bcrypt.genSalt(10);
+    // Hash the Password
+    const passwordHashed = this.password = await bcrypt.hash(password, salt);
+
+    // Check if User is updating Password
+    if (password) {
         // Update Admin
         const admin = await Admin.findByIdAndUpdate(
-            req.userAuth._id, 
+            req.userAuth._id,
             {
-            email,
-            name,
-            password
-            }, 
+                email,
+                password: passwordHashed,
+                name
+            },
             {
                 new: true,
                 runValidators: true
@@ -126,7 +134,26 @@ exports.updateAdminController = AsyncHandler(async (req, res) => {
         res.status(200).json({
             status: "Success",
             data: admin,
-            message: "Admin Updated Successfully" 
+            message: "Admin Updated Successfully"
+        });
+    } else {
+        // Update Admin
+        const admin = await Admin.findByIdAndUpdate(
+            req.userAuth._id,
+            {
+                email,
+                name
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        res.status(200).json({
+            status: "Success",
+            data: admin,
+            message: "Admin Updated Successfully"
         });
     }
 
