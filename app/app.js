@@ -2,7 +2,8 @@
 const express = require('express');
 const adminRouter = require("../routes/staff/adminRouter");
 const {globalErrorHandler, notFoundError} = require('../middlewares/globalErrorHandler');
-const adminBaseUrl = "/api/v1/admins";
+const academicYearRouter = require('../routes/academics/academicYear');
+const baseUrl = "/api/v1";
 const app = express();
 
 // === Middlewares ==
@@ -10,7 +11,9 @@ const app = express();
 app.use(express.json());
 
 // === Routes ==
-app.use(adminBaseUrl, adminRouter);
+app.use(baseUrl + "/admins", adminRouter);
+app.use(baseUrl + "/academic-years", academicYearRouter);
+
 
 // Custom Global Error Handler
 app.use(notFoundError);
