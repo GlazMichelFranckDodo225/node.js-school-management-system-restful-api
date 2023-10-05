@@ -1,6 +1,7 @@
 const AsyncHandler = require('express-async-handler');
 const AcademicYear = require('../../model/academic/AcademicYear');
 const Admin = require("../../model/staff/Admin");
+const { request } = require('express');
 
 // @desc Create Academic Year
 // @route POST /api/v1/academic-years
@@ -86,3 +87,15 @@ exports.updateAcademicYear = AsyncHandler(async (req, res) => {
     data: academicYear
    });
 });
+
+// @desc Delete Academic Year
+// @route DELETE /api/v1/academic-years/:id
+// @access Private
+exports.deleteAcademicYear = AsyncHandler(async (req, res) => {
+   await AcademicYear.findByIdAndDelete(req.params.id);
+   
+   res.status(201).json({
+    status: "Success",
+    message: "Academic Year Deleted Successfully"
+   });
+});   

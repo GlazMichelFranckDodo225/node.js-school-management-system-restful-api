@@ -3,7 +3,8 @@ const {
     createAcademicYear,
     getAcademicYears,
     getAcademicYear,
-    updateAcademicYear
+    updateAcademicYear,
+    deleteAcademicYear
 } = require("../../controller/academics/academicYearController");
 const isAdmin = require('../../middlewares/isAdmin');
 const isLogin = require('../../middlewares/isLogin');
@@ -13,6 +14,7 @@ academicYearRouter.post("/", isLogin, isAdmin, createAcademicYear);
 academicYearRouter.get("/", isLogin, isAdmin, getAcademicYears);
 academicYearRouter.get("/:id", isLogin, isAdmin, getAcademicYear);
 academicYearRouter.put("/:id", isLogin, isAdmin, updateAcademicYear);
+academicYearRouter.delete("/:id", isLogin, isAdmin, deleteAcademicYear);
 
 module.exports = academicYearRouter;
 
